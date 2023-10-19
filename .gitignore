@@ -1,3 +1,5 @@
 /__pycache__
 /factorio
 /map-preview.png
+/static
+map_gen_settings.json
