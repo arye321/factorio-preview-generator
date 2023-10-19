@@ -18,4 +18,4 @@ EXPOSE 5000
 
 # Command to start the server
 
-CMD ["flask", "--app","index", "run"]
+CMD ["flask","--host=0.0.0.0", "--app","index", "run"]
