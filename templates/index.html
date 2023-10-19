@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send String to Flask</title>
+</head>
+<body>
+    <div>
+        <input type="text" id="text-input" placeholder="Enter a string">
+        <button id="send-button">Send String</button>
+    </div>
+
+    <script>
+        document.getElementById('send-button').addEventListener('click', function () {
+            const text = document.getElementById('text-input').value;
+            const data = { text: text };
+
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("data===",data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
