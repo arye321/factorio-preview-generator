@@ -4,10 +4,16 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir Flask
 
-COPY . /app/
-RUN apt-get update
-RUN apt-get install xz-utils
+COPY index.py index.py
+COPY templates templates
 
+
+RUN apt-get update
+
+RUN apt-get install wget -y
+RUN wget https://www.factorio.com/get-download/1.1.91/headless/linux64
+
+RUN apt-get install xz-utils
 RUN tar -xf linux64
 
 EXPOSE 5000
