@@ -5,7 +5,19 @@
 </head>
 <body>
     <div id="input-div">
-        <input type="text" id="text-input" placeholder="Enter a string" value="asdf">
+        <textarea name="comment" id="text-input" rows="11" cols="60"  form="usrform"
+>>>>eNpjZGBkiGYAgtWrtOwYGA44cLAk5yfmMDA02MMwV3J+QUFqkW5+
+USqyMGdyUWlKqm5+Jqri1LzU3ErdpMRiFMUcmUX5eegmsBaX5OehipQ
+UpaYWI4twlxYl5mWW5qLrZWDcp/nTsaFFjgGE/9czKPz/D8JA1gOgb0
+CYgbEB5CEGRqAYDLAm52SmpTEwKDgCsRNYESNjtcg694dVLfaMEDV6D
+oz/wYDfASJyIAnKYPCEMBraDxOWYjCBMT7YMxqDwWckBsTSEqClUFUc
+DggGwkVA5/W+3brg+7ELdox/Vn685JuUYM9o6Cry7oPROjugNDvIC0x
+wYtZMENgJ8woDzMwH9lCpm/aMZ8+AwBt7RlaQDhEQ4WABJA54MzMwCv
+ABWQt6gISCDAPMaXYwY0QcGNPA4BvMJ49hjMv26P5QcWC0ARkuByJOg
+AiwhXCXMUKYDv0OjA7yMFlJhBKgfiMGZDekIHx4EmbtYST70RyighER
+yP5AE1FxwBINXCALU+DEC2a4a4DheYEdxnOY78DIDGKAVH0BikF4IBm
+YURBawAEc3MwMCPDBnkF+zxRzAGfTqkg=<<<</textarea> 
+        <!-- <input type="text" id="text-input" placeholder="Enter a string" value="asdf"> -->
         <button id="send-button">Send String</button>
     </div>
 
@@ -13,13 +25,6 @@
         Loading...
     </div>
 
-    <div id="response-div" style="display: none;">
-        <!-- The response message will be displayed here -->
-        <div>
-            <p id="response-message"></p>
-            <img id="map-image" src="" alt="Map Preview">
-        </div>
-    </div>
 
     <script>
         document.getElementById('send-button').addEventListener('click', function () {
@@ -29,7 +34,6 @@
 
             const text = document.getElementById('text-input').value;
             const data = { text: text };
-
             fetch('/generate', {
                 method: 'POST',
                 headers: {
@@ -40,14 +44,8 @@
             .then(response => response.json())
             .then(data => {
                 // Hide loading, show response
-                document.getElementById('loading-div').style.display = 'none';
-                document.getElementById('response-div').style.display = 'block';
-                const responseMessage = document.getElementById('response-message');
-                responseMessage.textContent = data.message;
-
-                const mapImage = document.getElementById('map-image');
-                mapImage.src = '/static/map-preview.png';
-                mapImage.style.display = 'block';
+                location.href = `/${data.message}`;
+                
             })
             .catch(error => {
                 console.error('Error:', error);

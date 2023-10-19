@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import os
-
+import time
 import zlib
 import io
 import struct
@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 import base64
 
 app = Flask(__name__)
-def generate(map_string):
+def generate(map_string,name):
     known_version = (0, 17, 51, 0)
 
 
@@ -216,23 +216,18 @@ def generate(map_string):
         map_string = parse_frame(map_string)
         try:
             decoded = base64.decodebytes(map_string.encode())
-        except Exception:
-            raise Exception('could not decode map exchange string - maybe it is incomplete')
-        unzipped = zlib.decompress(decoded)
-        try:
+ 
+            unzipped = zlib.decompress(decoded)
+
             buf = io.BytesIO(unzipped)
-        except Exception:
-            raise Exception('could not decompress map exchange string')
-        deserializer = Deserializer(buf)
-        version_mismatch = (deserializer.version, known_version) if known_version < deserializer.version else False
-        try:
+
+            deserializer = Deserializer(buf)
+            version_mismatch = (deserializer.version, known_version) if known_version < deserializer.version else False
             map_gen_settings = MapGenSettings(deserializer)
             return map_gen_settings, version_mismatch
         except Exception:
-            if version_mismatch:
-                raise Exception('the version of this map exchange string {} is too recent and there was a parse error.'
-                            .format(version_mismatch))
-            raise Exception('could not parse map exchange string structure')
+            return False
+
 
 
     def dump_map_gen_settings(map_gen_settings, path):
@@ -242,10 +237,15 @@ def generate(map_string):
 
     map_gen_settings = parse_map_string(map_string)[0]
 
-    with open('map_gen_settings.json','w') as f:
+    with open(f'{name}.json','w') as f:
         json.dump(native(map_gen_settings),f)
 
-    os.system('/content/factorio/bin/x64/factorio --generate-map-preview=map-preview.png --map-gen-settings map_gen_settings.json --map-preview-size=2048 --map-preview-scale=2')
+    # os.system(f'factorio/bin/x64/factorio --generate-map-preview={name}.png --map-gen-settings {name}.json --map-preview-size=2048 --map-preview-scale=2')
+    os.system(f'factorio/bin/x64/factorio --generate-map-preview={name}.png --map-gen-settings {name}.json')
+    os.system(f'mv {name}.png static/{name}.png')
+    os.system(f'mv {name}.json static/{name}.json')
+    return True
+
 @app.route("/")
 def index():
     # os.system('factorio/bin/x64/factorio --generate-map-preview=map-preview.png --map-gen-settings map_gen_settings.json --map-preview-size=2048 --map-preview-scale=2')
@@ -254,11 +254,14 @@ def index():
     return render_template('index.html')
 
 @app.route('/generate', methods=['POST'])
-def home_post():
+def generate_api():
+
     data = request.json  # Assuming you are sending JSON data
     received_string = data.get('text')
-
-    return jsonify({'message': f'String received: {received_string}'})
+    name = str(time.time()).replace('.','')
+    if (generate(received_string,name)):
+        return jsonify({'message': f'{name}'})
+    return "error"
 
 
 @app.route('/about')
@@ -268,4 +271,16 @@ def about():
 
 @app.route('/<name>')
 def preview(name):
-    return f'<img id="map-image" src="/static/{name}.png" alt="Map Preview">'
+    if (os.path.isfile(f'static/{name}.png')):
+        return f"""<!DOCTYPE html>
+<html>
+<body>
+<h4>json: </h4>
+<a href="/static/{name}.json">{name}.json</a>
+<br>
+<h4>map: </h4>
+<img id="map-image" src="/static/{name}.png" alt="Map Preview">
+</body>
+</html>
+"""
+    return "error"
