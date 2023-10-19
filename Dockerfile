@@ -7,7 +7,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir Flask
 
 # Copy the rest of the project files
-COPY . /app
+COPY . /app/
 
 RUN tar -xf linux64
 
